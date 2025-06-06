@@ -1,0 +1,12 @@
+<!doctype html>
+<html>
+  <head><title>Список на песни</title></head>
+  <body>
+    <h1>Список на песни</h1>
+    <ul>
+      {% for song in songs %}
+      <li>{{ song.title }} - {{ song.artist }} ({{ song.genre }})</li>
+      {% endfor %}
+    </ul>
+  </body>
+</html>
