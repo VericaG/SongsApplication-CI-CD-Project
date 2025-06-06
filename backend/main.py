@@ -21,3 +21,11 @@ def read_songs(db: Session = Depends(get_db)):
 @app.post("/songs")
 def create_song(song: models.SongCreate, db: Session = Depends(get_db)):
     return crud.create_song(db, song)
+
+@app.get("/")
+def read_root():
+    return {"message": "Welcome to Songs API!"}
+
+@app.get("/ping")
+def ping():
+    return {"message": "pong"}
