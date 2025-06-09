@@ -1,23 +1,19 @@
-name: CI/CD Pipeline → DockerHub + Kubernetes
+name: CI/CD Pipeline → DockerHub
 
 on:
   push:
     branches: [ master ]
 
 env:
-  DOCKER_HUB_REPO_BACKEND: vericag/song-manager-backend
-  DOCKER_HUB_REPO_FRONTEND: vericag/song-manager-frontend
+  BACKEND_IMAGE: vericag/song-manager-backend
+  FRONTEND_IMAGE: vericag/song-manager-frontend
 
 jobs:
   build_and_push:
     runs-on: ubuntu-latest
-    permissions:
-      contents: read
-      packages: write
-      id-token: write
 
     steps:
-      - name: Checkout code
+      - name: Checkout source code
         uses: actions/checkout@v4
 
       - name: Set up Docker Buildx
@@ -35,7 +31,7 @@ jobs:
           context: ./backend
           file: ./backend/Dockerfile
           push: true
-          tags: ${{ env.DOCKER_HUB_REPO_BACKEND }}:latest
+          tags: ${{ env.BACKEND_IMAGE }}:latest
 
       - name: Build & push frontend image
         uses: docker/build-push-action@v4
@@ -43,4 +39,4 @@ jobs:
           context: ./frontend
           file: ./frontend/Dockerfile
           push: true
-          tags: ${{ env.DOCKER_HUB_REPO_FRONTEND }}:latest
+          tags: ${{ env.FRONTEND_IMAGE }}:latest
