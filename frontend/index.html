@@ -1,0 +1,240 @@
+<!--<!DOCTYPE html>-->
+<!--<html lang="en">-->
+<!--<head>-->
+<!--  <meta charset="UTF-8" />-->
+<!--  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>-->
+<!--  <title>Song Manager</title>-->
+<!--  <style>-->
+<!--    body {-->
+<!--      font-family: Arial, sans-serif;-->
+<!--      max-width: 600px;-->
+<!--      margin: 2rem auto;-->
+<!--      padding: 1rem;-->
+<!--    }-->
+
+<!--    form {-->
+<!--      display: flex;-->
+<!--      flex-direction: column;-->
+<!--      margin-bottom: 2rem;-->
+<!--    }-->
+
+<!--    input, button {-->
+<!--      margin: 0.3rem 0;-->
+<!--      padding: 0.5rem;-->
+<!--      font-size: 1rem;-->
+<!--    }-->
+
+<!--    li {-->
+<!--      margin: 0.5rem 0;-->
+<!--    }-->
+
+<!--    .song-item {-->
+<!--      display: flex;-->
+<!--      justify-content: space-between;-->
+<!--      align-items: center;-->
+<!--    }-->
+<!--  </style>-->
+<!--</head>-->
+<!--<body>-->
+<!--  <h1>🎵 Song Manager</h1>-->
+
+<!--  <form id="songForm">-->
+<!--    <input type="text" id="name" placeholder="Song name" required />-->
+<!--    <input type="text" id="artist" placeholder="Artist" required />-->
+<!--    <input type="text" id="album" placeholder="Album" required />-->
+<!--    <input type="text" id="genre" placeholder="Genre" required />-->
+<!--    <input type="number" id="year" placeholder="Year" required />-->
+<!--    <input type="number" step="0.1" id="rating" placeholder="Rating" required />-->
+<!--    <button type="submit">Add Song</button>-->
+<!--  </form>-->
+
+<!--  <h2>📃 All Songs</h2>-->
+<!--  <ul id="songList"></ul>-->
+
+<!--  <script>-->
+<!--    const apiUrl = "http://localhost:8000";-->
+
+<!--    async function fetchSongs() {-->
+<!--      const res = await fetch(`${apiUrl}/list`);-->
+<!--      const songs = await res.json();-->
+
+<!--      const list = document.getElementById("songList");-->
+<!--      list.innerHTML = "";-->
+
+<!--      songs.forEach(song => {-->
+<!--        const li = document.createElement("li");-->
+<!--        li.className = "song-item";-->
+<!--        li.innerHTML = `-->
+<!--          ${song.name} by ${song.artist} (${song.album}) - ${song.genre} [${song.year_released}] ⭐${song.rating}-->
+<!--          <button onclick="deleteSong('${song.name}')">Delete</button>-->
+<!--        `;-->
+<!--        list.appendChild(li);-->
+<!--      });-->
+<!--    }-->
+
+<!--    async function deleteSong(name) {-->
+<!--      await fetch(`${apiUrl}/delete/${name}`, { method: "POST" });-->
+<!--      fetchSongs();-->
+<!--    }-->
+
+<!--    document.getElementById("songForm").addEventListener("submit", async (e) => {-->
+<!--      e.preventDefault();-->
+
+<!--      const data = {-->
+<!--        name: document.getElementById("name").value,-->
+<!--        artist: document.getElementById("artist").value,-->
+<!--        album: document.getElementById("album").value,-->
+<!--        genre: document.getElementById("genre").value,-->
+<!--        year_released: parseInt(document.getElementById("year").value),-->
+<!--        rating: parseFloat(document.getElementById("rating").value),-->
+<!--      };-->
+
+<!--      await fetch(`${apiUrl}/create`, {-->
+<!--        method: "POST",-->
+<!--        headers: { "Content-Type": "application/json" },-->
+<!--        body: JSON.stringify(data),-->
+<!--      });-->
+
+<!--      document.getElementById("songForm").reset();-->
+<!--      fetchSongs();-->
+<!--    });-->
+
+<!--    fetchSongs();-->
+<!--  </script>-->
+<!--</body>-->
+<!--</html>-->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Song Manager</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      max-width: 600px;
+      margin: 2rem auto;
+      padding: 1rem;
+    }
+
+    form {
+      display: flex;
+      flex-direction: column;
+      margin-bottom: 2rem;
+    }
+
+    input, button {
+      margin: 0.3rem 0;
+      padding: 0.5rem;
+      font-size: 1rem;
+    }
+
+    li {
+      margin: 0.5rem 0;
+    }
+
+    .song-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+
+    .song-buttons {
+      display: flex;
+      gap: 0.5rem;
+    }
+  </style>
+</head>
+<body>
+  <h1>🎵 Song Manager</h1>
+
+  <form id="songForm">
+    <input type="text" id="name" placeholder="Song name" required />
+    <input type="text" id="artist" placeholder="Artist" required />
+    <input type="text" id="album" placeholder="Album" required />
+    <input type="text" id="genre" placeholder="Genre" required />
+    <input type="number" id="year" placeholder="Year" required />
+    <input type="number" step="0.1" id="rating" placeholder="Rating" required />
+    <button type="submit">Add / Update Song</button>
+  </form>
+
+  <h2>📃 All Songs</h2>
+  <ul id="songList"></ul>
+
+  <script>
+    const apiUrl = "http://localhost:8000";
+
+    async function fetchSongs() {
+      const res = await fetch(`${apiUrl}/list`);
+      const songs = await res.json();
+
+      const list = document.getElementById("songList");
+      list.innerHTML = "";
+
+      songs.forEach(song => {
+        const li = document.createElement("li");
+        li.className = "song-item";
+        li.innerHTML = `
+          <div>
+            ${song.name} by ${song.artist} (${song.album}) - ${song.genre} [${song.year_released}] ⭐${song.rating}
+          </div>
+          <div class="song-buttons">
+            <button onclick="loadSongToForm('${song.name}')">Update</button>
+            <button onclick="deleteSong('${song.name}')">Delete</button>
+          </div>
+        `;
+        list.appendChild(li);
+      });
+    }
+
+    function loadSongToForm(name) {
+      fetch(`${apiUrl}/read/${name}`)
+        .then(res => res.json())
+        .then(song => {
+          document.getElementById("name").value = song.name;
+          document.getElementById("artist").value = song.artist;
+          document.getElementById("album").value = song.album;
+          document.getElementById("genre").value = song.genre;
+          document.getElementById("year").value = song.year_released;
+          document.getElementById("rating").value = song.rating;
+        });
+    }
+
+    async function deleteSong(name) {
+      await fetch(`${apiUrl}/delete/${name}`, { method: "POST" });
+      fetchSongs();
+    }
+
+    document.getElementById("songForm").addEventListener("submit", async (e) => {
+      e.preventDefault();
+
+      const data = {
+        name: document.getElementById("name").value,
+        artist: document.getElementById("artist").value,
+        album: document.getElementById("album").value,
+        genre: document.getElementById("genre").value,
+        year_released: parseInt(document.getElementById("year").value),
+        rating: parseFloat(document.getElementById("rating").value),
+      };
+
+      // Check if song exists before deciding to create or update
+      const res = await fetch(`${apiUrl}/read/${data.name}`);
+      const song = await res.json();
+
+      const url = song?.name ? `${apiUrl}/update` : `${apiUrl}/create`;
+
+      await fetch(url, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(data),
+      });
+
+      document.getElementById("songForm").reset();
+      fetchSongs();
+    });
+
+    fetchSongs();
+  </script>
+</body>
+</html>
