@@ -5,7 +5,8 @@ on:
     branches: [ master ]
 
 env:
-  DOCKER_HUB_REPO: vericag/song-manager
+  DOCKER_HUB_REPO_BACKEND: vericag/song-manager-backend
+  DOCKER_HUB_REPO_FRONTEND: vericag/song-manager-frontend
 
 jobs:
   build_and_push:
@@ -28,19 +29,13 @@ jobs:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
-      - name: Extract image metadata
-        id: meta
-        uses: docker/metadata-action@v3
-        with:
-          images: ${{ env.DOCKER_HUB_REPO }}
-
       - name: Build & push backend image
         uses: docker/build-push-action@v4
         with:
           context: ./backend
           file: ./backend/Dockerfile
           push: true
-          tags: ${{ steps.meta.outputs.tags }}
+          tags: ${{ env.DOCKER_HUB_REPO_BACKEND }}:latest
 
       - name: Build & push frontend image
         uses: docker/build-push-action@v4
@@ -48,4 +43,4 @@ jobs:
           context: ./frontend
           file: ./frontend/Dockerfile
           push: true
-          tags: ${{ steps.meta.outputs.tags }}
+          tags: ${{ env.DOCKER_HUB_REPO_FRONTEND }}:latest
