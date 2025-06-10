@@ -49,6 +49,8 @@ services:
       MONGO_INITDB_ROOT_USERNAME: song_user
       MONGO_INITDB_ROOT_PASSWORD: song_pass
       MONGO_INITDB_DATABASE: songs_db
+    ports:
+      - "27017:27017"
     volumes:
       - mongodata:/data/db
     networks:
@@ -60,9 +62,9 @@ services:
     environment:
       MONGO_HOST: db
       MONGO_PORT: 27017
-      MONGO_USER: song_user
-      MONGO_PASSWORD: song_pass
       MONGO_DB: songs_db
+      MONGO_USER: song_user
+      MONGO_PASS: song_pass
     depends_on:
       - db
     ports:

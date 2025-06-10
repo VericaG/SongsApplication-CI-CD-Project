@@ -29,10 +29,17 @@
 # SessionLocal = sessionmaker(bind=engine, autocommit=False, autoflush=False)
 
 from motor.motor_asyncio import AsyncIOMotorClient
-from bson.objectid import ObjectId
+import os
 
-MONGO_DETAILS = "mongodb://song_user:song_pass@db:27017/songs_db"
+host = os.getenv("MONGO_HOST", "localhost")
+port = int(os.getenv("MONGO_PORT", "27017"))
+user = os.getenv("MONGO_USER", "user")
+password = os.getenv("MONGO_PASS", "pass")
+db_name = os.getenv("MONGO_DB", "testdb")
 
-client = AsyncIOMotorClient(MONGO_DETAILS)
-database = client.songs_db
-song_collection = database.get_collection("songs")
+uri = f"mongodb://{user}:{password}@{host}:{port}/{db_name}?authSource=admin"
+
+client = AsyncIOMotorClient(uri)
+db = client[db_name]
+song_collection = db["songs"]
+

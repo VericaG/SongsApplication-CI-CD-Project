@@ -89,10 +89,19 @@
 
 
 from fastapi import FastAPI, HTTPException
+from fastapi.middleware.cors import CORSMiddleware
 from app.schemas import SongSchema
 from app.crud import create, read, update, delete, list_all
 
 app = FastAPI()
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],  # Или постави конкретен frontend URL
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 @app.post("/create")
 async def create_song(schema: SongSchema):
