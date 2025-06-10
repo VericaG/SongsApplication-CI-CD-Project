@@ -1,13 +1,56 @@
+#services:
+#  db:
+#    image: postgres:15
+#    restart: always
+#    environment:
+#      POSTGRES_USER: song_user
+#      POSTGRES_PASSWORD: song_pass
+#      POSTGRES_DB: songs_db
+#    volumes:
+#      - pgdata:/var/lib/postgresql/data
+#    networks:
+#      - songnet
+#
+#  backend:
+#    build: ./backend
+#    restart: always
+#    environment:
+#      POSTGRES_URL: db
+#      POSTGRES_USER: song_user
+#      POSTGRES_PASSWORD: song_pass
+#      POSTGRES_DATABASE: songs_db
+#    depends_on:
+#      - db
+#    ports:
+#      - "8000:8000"
+#    networks:
+#      - songnet
+#
+#  frontend:
+#    build: ./frontend
+#    restart: always
+#    ports:
+#      - "8080:80"
+#    depends_on:
+#      - backend
+#    networks:
+#      - songnet
+#
+#volumes:
+#  pgdata:
+#
+#networks:
+#  songnet:
 services:
   db:
-    image: postgres:15
+    image: mongo:7
     restart: always
     environment:
-      POSTGRES_USER: song_user
-      POSTGRES_PASSWORD: song_pass
-      POSTGRES_DB: songs_db
+      MONGO_INITDB_ROOT_USERNAME: song_user
+      MONGO_INITDB_ROOT_PASSWORD: song_pass
+      MONGO_INITDB_DATABASE: songs_db
     volumes:
-      - pgdata:/var/lib/postgresql/data
+      - mongodata:/data/db
     networks:
       - songnet
 
@@ -15,10 +58,11 @@ services:
     build: ./backend
     restart: always
     environment:
-      POSTGRES_URL: db
-      POSTGRES_USER: song_user
-      POSTGRES_PASSWORD: song_pass
-      POSTGRES_DATABASE: songs_db
+      MONGO_HOST: db
+      MONGO_PORT: 27017
+      MONGO_USER: song_user
+      MONGO_PASSWORD: song_pass
+      MONGO_DB: songs_db
     depends_on:
       - db
     ports:
@@ -37,7 +81,7 @@ services:
       - songnet
 
 volumes:
-  pgdata:
+  mongodata:
 
 networks:
   songnet:
